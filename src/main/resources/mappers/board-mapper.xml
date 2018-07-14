@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC
+"-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Board">
+	<resultMap id="resultBoard" type="Board">
+		<id property="board_no" column="BOARD_NO"/>
+		<result property="board_category_no" column="BOARD_CATEGORY_NO"/>
+		<result property="board_title" column="BOARD_TITLE"/>
+		<result property="board_content" column="BOARD_CONTENT"/>
+		<result property="image_name" column="IMAGE_NAME"/>
+		<result property="board_date" column="BOARD_DATE"/>
+		<result property="member_id" column="MEMBER_ID"/>
+		<result property="etc" column="ETC"/>
+		
+		<association property="boardCategoryJoin" javaType="BoardCategory">
+			<id property="board_category_no" column="BOARD_CATEGORY_NO"/>
+			<result property="board_category_name" column="BOARD_CATEGORY_NAME"/>
+		</association>
+	</resultMap>
+	
+	<!-- 게시판 목록 -->
+	<select id="boardList" parameterType="Board" resultType="Board" resultMap="resultBoard">
+		SELECT *
+		FROM BOARD
+		JOIN BOARD_CATEGORY USING (BOARD_CATEGORY_NO)
+		WHERE BOARD_CATEGORY_NO = #{board_category_no}
+		AND ETC = '0'
+		ORDER BY BOARD_NO DESC
+	</select>
+	
+	<!-- 게시판 상세보기 -->
+	<select id="boardDetail" parameterType="Board" resultType="Board" resultMap="resultBoard">
+		SELECT *
+		FROM BOARD
+		JOIN BOARD_CATEGORY USING (BOARD_CATEGORY_NO)
+		WHERE BOARD_NO = #{board_no}
+	</select>
+	
+	<!-- 게시판 글쓰기 -->
+	<insert id="boardWrite" parameterType="Board">
+		INSERT INTO BOARD VALUES((SELECT MAX(BOARD_NO) FROM BOARD) + 1, <!-- #{board_category_no} -->1, #{board_title}, #{board_content}, NULL, SYSDATE, #{member_id}, 0, '0')
+	</insert>
+	
+	<!-- 게시판 글쓰기 후 게시판 상세보기 -->
+	<select id="boardRecent" parameterType="Board" resultType="_int">
+		SELECT MAX(BOARD_NO)
+		FROM BOARD
+		WHERE ETC = '0'
+		AND MEMBER_ID = #{member_id}
+	</select>
+	
+	<!-- 게시판 삭제 -->
+	<update id="boardDelete" parameterType="_int">
+		UPDATE BOARD
+		SET ETC = '1'
+		WHERE BOARD_NO = #{board_no}
+	</update>
+	
+	<!-- 게시판 수정 -->
+	<update id="boardUpdate" parameterType="Board">
+		UPDATE BOARD
+		SET BOARD_TITLE = #{board_title}, BOARD_CONTENT = #{board_content}
+		WHERE BOARD_NO = #{board_no}
+	</update>
+	
+	<select id="boardUpdateView" parameterType="_int" resultType="Board">
+		SELECT *
+		FROM BOARD
+		WHERE BOARD_NO = #{board_no}
+	</select>
+</mapper>

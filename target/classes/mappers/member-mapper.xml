@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC
+"-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Member">
+	<resultMap id="resultMember" type="Member">
+		
+	</resultMap>
+	
+	<select id="loginCheck" parameterType="Member" resultType="Member" resultMap="resultMember">
+		SELECT * FROM MEMBER WHERE MEMBER_ID = #{member_id} AND MEMBER_PWD = #{member_pwd}
+	</select>
+</mapper>

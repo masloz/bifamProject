@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC
+"-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<typeAlias type="com.yjp.bifam.member.model.vo.Member" alias="Member"/>
+		<typeAlias type="com.yjp.bifam.board.model.vo.Board" alias="Board"/>
+		<typeAlias type="com.yjp.bifam.board.model.vo.BoardCategory" alias="BoardCategory"/>
+	</typeAliases>
+	
+	<mappers>
+		<mapper resource="mappers/member-mapper.xml"/>
+		<mapper resource="mappers/board-mapper.xml"/>
+	</mappers>
+</configuration>
