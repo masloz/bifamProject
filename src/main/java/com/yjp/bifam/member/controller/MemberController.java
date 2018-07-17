@@ -38,4 +38,10 @@ public class MemberController {
 	public String memberSignUp(){
 		return "member/signUp";
 	}
+	
+//	404
+	@RequestMapping(value ="/404")
+	public String error404(){
+		return "main/404";
+	}
 }
