@@ -14,13 +14,14 @@ import com.yjp.bifam.util.crawling.model.Crawling;
 @Controller
 public class CrawlingController {
 	
-	@RequestMapping(value = "crawling.bf", method = RequestMethod.GET)
+	@RequestMapping(value = "/crawling", method = RequestMethod.GET)
 	public String naverNews(Model model){
 		String result = "utilTest/crawling";
+		int cnt = 0;
 		ArrayList<Crawling> news = new ArrayList<>();;
 		
 		// Crawling 할 주소
-		String[] crawlingTarget = {"http://news.naver.com/", "http://media.daum.net/digital/"};
+		String[] crawlingTarget = {"https://news.naver.com/", "https://media.daum.net/digital/"};
 		for(int i = 0; i < crawlingTarget.length; i++){
 			String page = "";
 			// Crawling
@@ -34,12 +35,12 @@ public class CrawlingController {
 			}
 			model.addAttribute(page + "CrawlingList", news);
 			
-			// Crawling 내용물이 없으면 404 page
-			if(news.size() == 0){
-				result = "main/404";
-				break;
-			}
+			cnt += news.size(); 
 		}
+		
+		// Crawling 내용물이 없으면 404 page
+		if(cnt == 0)
+			result = "main/404";
 			
 		return result;
 	}

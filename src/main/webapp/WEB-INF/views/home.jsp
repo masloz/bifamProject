@@ -28,7 +28,7 @@
 <br><a href="boardList.bf">게시판 이동</a>
 <br><a href="crawling.bf">Now News</a>
 <br><a href="trackingInquiry.bf">Tracking</a>
-
+<br><a href="contact.bf">Contact</a>
 
 
 <%-- 네아로

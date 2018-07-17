@@ -4,7 +4,10 @@
 <html>
 <head>
 	<meta charset="UTF-8">
+	
+	<!-- JQUERY 3.3.1 -->
 	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+	
 	<title>BIFAM</title>
 </head>
 <body>
