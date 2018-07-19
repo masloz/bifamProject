@@ -61,9 +61,9 @@ public class CrawlingController {
 			String temp;
 			while((temp = br.readLine()) != null){
 				if(target.contains("naver")){
-					if(temp.contains("newsnow_tx_inner")){
-						String line = br.readLine();
-						news.add(new Crawling(line.split("\"")[1], line.split("<strong>")[1].split("</strong>")[0].replaceAll("&quot;", "\"")));
+					if(temp.contains("nclicks(hom.headcont)") && temp.contains("nh=") && !temp.contains("img")){
+						System.out.println(temp);
+						news.add(new Crawling(temp.split("\"")[1], temp.split("<strong>")[1].split("</strong>")[0].replaceAll("&quot;", "\"")));
 					}
 				}else if(target.contains("daum")){
 					if(temp.contains("link_txt #article_main")){

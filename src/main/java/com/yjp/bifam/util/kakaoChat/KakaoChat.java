@@ -17,6 +17,7 @@ import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -47,7 +48,7 @@ public class KakaoChat {
 	
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/message", produces="application/json; charset=utf-8")
-	public String message(@RequestBody String content, HttpServletRequest request){
+	public String message(@RequestBody String content, HttpServletRequest request) throws ParseException{
 		JSONObject messageText = new JSONObject();			// text (String), message_button (JSONObject), photo (JSONObject)
 			JSONObject message_button = new JSONObject();	// label (String), url (String)
 			JSONObject photo = new JSONObject();			// url (String), width (int), height (int)
@@ -57,9 +58,11 @@ public class KakaoChat {
 		keyboard.put("type", "buttons");
 		keyboard.put("buttons", buttons);
 		
-		
+		JSONParser jParser = new JSONParser();
+		JSONObject jObject = (JSONObject) jParser.parse(content);
+		String jContent = jObject.get("content").toString();
 
-		if (content.contains("Today Random Menu!")) {		// messageText
+		if (jContent.contains("Today Random Menu!")) {		// messageText
 			// FOOD LIST LOAD food.txt
 			File file = null;
 			try {
@@ -72,7 +75,7 @@ public class KakaoChat {
 			// TEXT
 			messageText.put("text", randomMenu(file));
 			
-		} else if (content.contains("Go to BIFAM!")) {	// messageText (+ message_button)
+		} else if (jContent.contains("Go to BIFAM!")) {	// messageText (+ message_button)
 			// TEXT
 			messageText.put("text", "BIFAM!");
 			
@@ -80,7 +83,7 @@ public class KakaoChat {
 			message_button.put("label", "사이트로 이동");
 			message_button.put("url", "http://228220.ddns.net:228/bifam/404");
 			messageText.put("message_button", message_button);
-		} else if(content.contains("Photo test")){	// messageText (+ photo)
+		} else if(jContent.contains("Photo test")){	// messageText (+ photo)
 			// TEXT
 			messageText.put("text", "This is Photo test.");
 			
@@ -89,27 +92,54 @@ public class KakaoChat {
 			photo.put("width", 900);
 			photo.put("height", 900);
 			messageText.put("photo", photo);
-		} else if(content.contains("Translate")){
+		} else if(jContent.contains("Translate (PAPAGO)")){
 			// KEYBOARD TYPE (buttons -> text)
 			keyboard.replace("type", "text");
 			
 			// TEXT
-			messageText.put("text", "translate");
+			messageText.put("text", "Translate (PAPAGO)");
 			
-		} else {
-
+		} else if(jContent.contains("Fine Dust Level")){
+			// KEYBOARD TYPE (buttons -> text)
+			keyboard.replace("type", "text");
+			
+			// TEXT
+			messageText.put("text", "조회를 원하는 지역을 @와 함께 적어주세요.\n 예)@강남, @양평");
+		} else if(jContent.charAt(0) == '@'){
+			String stationName = jContent.substring(1);
+			
+			// FOOD LIST LOAD food.txt
+			File file = null;
 			try {
-				// TRANSLATE (PAPAGO)
-				JSONParser jParser = new JSONParser();
-				JSONObject jObject = (JSONObject)jParser.parse(content);
-
-				// TEXT
-				messageText.put("text", papago(jObject.get("content").toString()));
-			} catch (ParseException e) {
+				// FILE RELATIVE PATH (파일 상대경로)
+				file = new File(request.getSession().getServletContext().getResource("/resources/etc/stationName.txt").getPath());
+			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
+			ArrayList<String> list = searchStationName(stationName, file);
+			int listSize = list.size();
 			
+			if(listSize == 0){
+				// KEYBOARD TYPE (buttons -> text)
+				keyboard.replace("type", "text");
+				
+				// TEXT
+				messageText.put("text", "측정소가 없는 지역입니다. \n가까운 다른 곳을 적어주세요.\n 예)@강남, @양평");
+			}else if(listSize == 1){
+				// TEXT
+				messageText.put("text", fineDustInquiry(list.get(0).substring(1)));
+			}else{
+				// TEXT
+				messageText.put("text", "중복되는 지명이 존재합니다.\n원하는 지역을 선택해주세요.");
+				
+				// BUTTONS
+				keyboard.put("buttons", list);
+			}
 			
+		} else {
+			// TRANSLATE (PAPAGO)
+			// TEXT
+			messageText.put("text", papago(jContent));
 		}
 
 		// 보낼 MESSAGE (JSONObject)
@@ -123,9 +153,10 @@ public class KakaoChat {
 	public ArrayList<String> buttons(){
 		ArrayList<String> btns = new ArrayList<>();
 		btns.add("Today Random Menu!");
+		btns.add("Fine Dust Level");
+		btns.add("Translate (PAPAGO)");
 		btns.add("Go to BIFAM!");
 		btns.add("Photo test");
-		btns.add("Translate");
 		
 		return btns;
 	}
@@ -182,7 +213,6 @@ public class KakaoChat {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -195,7 +225,7 @@ public class KakaoChat {
 		
 		BufferedReader br;
 		try {
-			br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "EUC-KR"));
+			br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
 			
 			String food;
 			while((food = br.readLine()) != null){
@@ -208,6 +238,119 @@ public class KakaoChat {
 		}
 		
 		return list.get(new Random().nextInt(list.size()));
+	}
+	
+	// 주소(미세먼지 관측소) 검색
+	public static ArrayList<String> searchStationName(String query, File file){
+		ArrayList<String> list = new ArrayList<>();
+		ArrayList<String> allList = stationName(file);
+		for(int i = 0; i < allList.size(); i++){
+			if(allList.get(i).contains(query))
+				list.add("@" + allList.get(i));
+		}
+		return list;
+	}
+
+	// 미세먼지 관측소 목록
+	public static ArrayList<String> stationName(File file) {
+		ArrayList<String> list = new ArrayList<>();
+
+		BufferedReader br;
+
+		try {
+			br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+
+			String stationName;
+			while ((stationName = br.readLine()) != null) {
+				list.add(stationName);
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return list;
+	}
+
+	// 미세먼지 조회
+	public static String fineDustInquiry(String stationName){
+		StringBuffer result = new StringBuffer(0);
+		try {
+			String key = "iaO0GasN3DJm52RYjFiZzYv%2Fo%2F4eiUvAefcioIu2CIOVPu%2FtzBrkqap0Mb5FYrzPoESsY8zJP3v9xLlCasMXow%3D%3D";
+			String urlString = "http://openapi.airkorea.or.kr/openapi/services/rest/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty";
+
+			String serviceKey = "?serviceKey=" + key;
+			String location = "&stationName=" + URLEncoder.encode(stationName, "UTF-8");
+			String returnType = "&_returnType=json";
+			String option = "&dataTerm=DAILY";
+			
+			URL url = new URL(urlString + serviceKey + location + returnType + option);
+			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+			con.setRequestMethod("GET");
+			con.setRequestProperty("Content-type", "application/json");
+			// System.out.println("ResponseCode : " + con.getResponseCode());
+
+			// Response
+			BufferedReader rd;
+			if (con.getResponseCode() >= 200 && con.getResponseCode() <= 300) {
+				rd = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			} else {
+				rd = new BufferedReader(new InputStreamReader(con.getErrorStream()));
+			}
+			StringBuilder sb = new StringBuilder();
+			String line;
+			while ((line = rd.readLine()) != null) {
+				sb.append(line);
+			}
+
+			try {
+				// String -> JSONObject
+				JSONParser jsonParser = new JSONParser();
+				JSONObject jsonObject = (JSONObject) jsonParser.parse(sb.toString());
+				JSONArray jsonArr = (JSONArray)jsonObject.get("list");
+				
+				// 값이 없을 땐 1시간 전 값 추출
+				JSONObject jsonO = null;
+				for(int i = 0; i < jsonArr.size(); i++){
+					if(!((JSONObject) jsonArr.get(i)).get("pm10Value").equals("-")){
+						jsonO = (JSONObject) jsonArr.get(i);
+						break;
+					}
+				}
+				
+				// 미세먼지 농도에 따른 단계 (grade)
+				// 0~30 좋음 / 31~80 보통 / 81~120 약간 나쁨 / 121~200 나쁨 / 201~300 매우 나쁨
+				int pm10Value = Integer.parseInt(jsonO.get("pm10Value").toString());
+				String grade;
+				if(pm10Value < 31)
+					grade = "(좋음)";
+				else if(pm10Value < 80)
+					grade = "(보통)";
+				else if(pm10Value < 121)
+					grade = "(약간 나쁨)";
+				else if(pm10Value < 200)
+					grade = "(나쁨)";
+				else
+					grade = "(매우 나쁨)";
+
+				// 출력할 문자 버퍼에 추가
+				result.append(jsonO.get("dataTime") + "\n");
+				result.append("'" + stationName + "'의 미세먼지 농도\n");
+				result.append("미세먼지 : " + jsonO.get("pm10Value") + "μg/㎥ " + grade + "\n");
+				if(!jsonO.get("pm25Value").equals("-"))
+					result.append("초미세먼지 : " + jsonO.get("pm25Value") + "μg/㎥");
+				
+			} catch (ParseException e) {
+				e.printStackTrace();
+			} finally{
+				rd.close();
+				con.disconnect();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return result.toString();
 	}
 	
 	/* 친구 삭제, 차단, 채팅창 나가기 기능
