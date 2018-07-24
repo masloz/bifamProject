@@ -62,7 +62,7 @@ public class KakaoChat {
 		JSONObject jObject = (JSONObject) jParser.parse(content);
 		String jContent = jObject.get("content").toString();
 
-		if (jContent.contains("Today Random Menu!")) {		// messageText
+		if (jContent.contains("오늘 뭐 먹지? (랜덤 메뉴)")) {		// messageText
 			// FOOD LIST LOAD food.txt
 			File file = null;
 			try {
@@ -92,14 +92,14 @@ public class KakaoChat {
 			photo.put("width", 900);
 			photo.put("height", 900);
 			messageText.put("photo", photo);
-		} else if(jContent.contains("Translate (PAPAGO)")){
+		} else if(jContent.contains("파파고 번역 (한->영)")){
 			// KEYBOARD TYPE (buttons -> text)
 			keyboard.replace("type", "text");
 			
 			// TEXT
-			messageText.put("text", "Translate (PAPAGO)");
+			messageText.put("text", "번역을 원하시는 문장을 적어주세요.");
 			
-		} else if(jContent.contains("Fine Dust Level")){
+		} else if(jContent.contains("지역별 미세먼지 조회")){
 			// KEYBOARD TYPE (buttons -> text)
 			keyboard.replace("type", "text");
 			
@@ -124,7 +124,7 @@ public class KakaoChat {
 				keyboard.replace("type", "text");
 				
 				// TEXT
-				messageText.put("text", "측정소가 없는 지역입니다. \n가까운 다른 곳을 적어주세요.\n 예)@강남, @양평");
+				messageText.put("text", "측정소가 없는 지역입니다.\n가까운 다른 곳을 적어주세요.\n 예)@강남, @양평");
 			}else if(listSize == 1){
 				// TEXT
 				messageText.put("text", fineDustInquiry(list.get(0).substring(1)));
@@ -152,11 +152,11 @@ public class KakaoChat {
 	// BASIC BUTTONS
 	public ArrayList<String> buttons(){
 		ArrayList<String> btns = new ArrayList<>();
-		btns.add("Today Random Menu!");
-		btns.add("Fine Dust Level");
-		btns.add("Translate (PAPAGO)");
+		btns.add("오늘 뭐 먹지? (랜덤 메뉴)");
+		btns.add("지역별 미세먼지 조회");
+		btns.add("파파고 번역 (한->영)");
 		btns.add("Go to BIFAM!");
-		btns.add("Photo test");
+//		btns.add("Photo test");
 		
 		return btns;
 	}

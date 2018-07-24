@@ -17,7 +17,7 @@
 	</style>
 
 	<meta charset="UTF-8">
-	<title>Insert title here</title>
+	<title>Error</title>
 </head>
 <body>
 	<!-- <h1>404 NOT FOUND</h1> -->

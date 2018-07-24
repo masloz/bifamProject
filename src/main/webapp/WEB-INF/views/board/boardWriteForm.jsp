@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
+	<c:import url="../main/header.jsp"/>
 </head>
 <body>
 	<form action="boardWrite.bf" method="POST">
@@ -14,5 +14,6 @@
 		<textarea name="board_content" rows="20" cols="100"></textarea>
 		<button type="submit">작성하기</button>
 	</form>
+	<c:import url="../main/footer.jsp"/>
 </body>
 </html>

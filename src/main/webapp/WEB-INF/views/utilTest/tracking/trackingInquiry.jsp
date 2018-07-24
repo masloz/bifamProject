@@ -3,32 +3,36 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
-	<title>Tracking</title>
+	<c:import url="../../main/header.jsp"/>
 </head>
 <body>
-	<c:import url="../../main/header.jsp"/>
-	
-	<!-- Tracking Inquiry -->
-	<h1>TRACKING</h1>
-	<hr>
-	<h2>택배 조회</h2>
-	
-	<select name="code">
-	<c:forEach var="companyList" items="${ companyList }">
-		<option value="${ companyList.code }">${ companyList.name }</option>
-	</c:forEach>
-	</select><br>
-	<input type="text" name="invoice" placeholder="송장번호 입력"><br>
-	<input type="button" id="inquiryButton" value="조회하기" onclick="trackingInquiry()">
-	
-	<br>
-	<hr>
-	<br>
-	
-	<div id="trackingInfo">
-		
+	<div class="wrap">
+		<div class="container">
+			<!-- Tracking Inquiry -->
+			<h1>TRACKING</h1>
+			<hr color="white">
+			<h2>택배 조회</h2>
+			<div class="form-inline">
+				<select name="code" class="form-control" style="margin-right:20px;">
+					<c:forEach var="companyList" items="${ companyList }">
+						<option value="${ companyList.code }">${ companyList.name }</option>
+					</c:forEach>
+				</select><br>
+				<input type="text" name="invoice" placeholder="송장번호 입력" class="form-control" style="margin-right:20px;"><br>
+				<input type="button" id="inquiryButton" value="조회하기" onclick="trackingInquiry()" class="form-control">
+			</div>
+			
+			<br>
+			
+			<br>
+			
+			<div id="trackingInfo">
+				
+			</div>
+		</div>
 	</div>
+	
+	<c:import url="../../main/footer.jsp"/>
 	
 	<!-- Tracking Info -->
 	<script>
@@ -42,7 +46,8 @@
 					"invoice" : $('[name="invoice"]').val()},
 			success : function(tracking){
 				var trackArray = tracking.trackingDetails;
-				var html = "<table><tr><th>운송장 번호</th><th>보낸 사람</th><th>받는 사람</th><th>수령 주소</th><th>상품정보</th><th>배송상태</th></tr>";
+				var html = "<hr color=\"white\"><br><br><h2>택배 조회 내역</h2><br>" + 
+				"<table class=\"table table-hover\"><tr><th>운송장 번호</th><th>보낸 사람</th><th>받는 사람</th><th>수령 주소</th><th>상품정보</th><th>배송상태</th></tr>";
 				
 				var level = tracking.level;
 				switch(level){
@@ -60,7 +65,7 @@
 				html += "<td>" + tracking.itemName + "</td>";
 				html += "<td>" + level + "</td></tr></table><br>";
 				
-				html += "<table><tr><th>시간</th><th>위치</th><th>배송상태</th><th>전화번호</th><th>전화번호2</th></tr>";
+				html += "<h4>상세 내역</h4><br><table class=\"table table-hover\"><tr><th>시간</th><th>위치</th><th>배송상태</th><th>전화번호</th><th>전화번호2</th></tr>";
 				for(var i in trackArray){
 					
 					html += "<tr><td>" + trackArray[i].timeString + "</td>";

@@ -3,19 +3,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
-	<title>Contact</title>
+	<c:import url="../main/header.jsp"/>
 </head>
 <body>
-	<c:import url="../main/header.jsp"/>
-	
-	<h1>CONTACT</h1>
-	<form action="sendMail.bf">
-		<input type="text" placeholder="name" name="name"><br>
-		<input type="text" placeholder="e-mail" name="email"><br>
-		<textarea placeholder="comment" name="comment"></textarea><br>
-		<input type="submit" value="Send">
-	</form>
-	
+	<div class="wrap">
+		<div class="container">
+			<h1>CONTACT</h1>
+			<hr color="white">
+			<form action="sendMail.bf">
+				<div class="row">
+					<div class="form-group col-sm-6">
+						<label>Name :</label>
+						<input type="text" placeholder="name" name="name" class="form-control form-control-sm">
+					</div>
+					<div class="form-group col-sm-6">
+						<label>E-mail :</label>
+						<input type="email" placeholder="e-mail" name="email" class="form-control form-control-sm">
+					</div>
+				</div>
+				<div class="form-group">
+					<label>Comment :</label>
+					<textarea placeholder="comment" name="comment" class="form-control"></textarea>
+				</div>
+				<div class="text-right">
+					<input type="submit" value="Send" class="btn btn-dark">
+				</div>
+				
+			</form>
+		</div>
+	</div>
+	<c:import url="../main/footer.jsp"/>
 </body>
 </html>

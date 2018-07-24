@@ -117,7 +117,6 @@ public class TrackingControll {
 				in = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8")); 
 				
 				String stringObject = in.readLine();
-				System.out.println(stringObject);
 				try {
 					JSONParser jsonParser = new JSONParser();
 					JSONObject jsonObject = (JSONObject) jsonParser.parse(stringObject);

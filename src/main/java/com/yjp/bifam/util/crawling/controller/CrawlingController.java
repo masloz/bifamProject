@@ -62,12 +62,11 @@ public class CrawlingController {
 			while((temp = br.readLine()) != null){
 				if(target.contains("naver")){
 					if(temp.contains("nclicks(hom.headcont)") && temp.contains("nh=") && !temp.contains("img")){
-						System.out.println(temp);
-						news.add(new Crawling(temp.split("\"")[1], temp.split("<strong>")[1].split("</strong>")[0].replaceAll("&quot;", "\"")));
+						news.add(new Crawling(temp.split("href=\"")[1].split("\"")[0], temp.split("<strong>")[1].split("</strong>")[0].replaceAll("&quot;", "\"")));
 					}
 				}else if(target.contains("daum")){
 					if(temp.contains("link_txt #article_main")){
-						news.add(new Crawling(temp.split("\"")[3], temp.split(">")[2].replaceAll("</a", "")));
+						news.add(new Crawling(temp.split("href=\"")[1].split("\"")[0], temp.split("\">")[2].split("</a>")[0]));
 					}
 				}
 			}

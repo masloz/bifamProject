@@ -1,9 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE html">
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
+	<c:import url="../main/header.jsp"/>
 </head>
 <body>
 	<form action="boardUpdate.bf?board_no=${ board.board_no }" method="POST">
@@ -14,5 +15,6 @@
 		<textarea name="board_content" rows="20" cols="100">${ board.board_content }</textarea>
 		<button type="submit">작성하기</button>
 	</form>
+	<c:import url="../main/footer.jsp"/>
 </body>
 </html>
