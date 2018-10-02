@@ -83,12 +83,35 @@ public class KakaoChat {
 			message_button.put("label", "사이트로 이동");
 			message_button.put("url", "http://228220.ddns.net:228/bifam/404");
 			messageText.put("message_button", message_button);
-		} else if(jContent.contains("Photo test")){	// messageText (+ photo)
+		} else if(jContent.contains("Instagram 남자 코디")){	// messageText (+ photo)
 			// TEXT
-			messageText.put("text", "This is Photo test.");
+			messageText.put("text", "Instagram 남자코디 중 랜덤 코디입니다.");
+			
+			JSONObject coordi = coordinationSearch("남자코디");
+			
+			// LABEL BUTTON (+ URL)
+			message_button.put("label", "Instagram으로 이동");
+			message_button.put("url", "https://www.instagram.com/p/" + coordi.get("shortcode"));
+			messageText.put("message_button", message_button);
 			
 			// PHOTO
-			photo.put("url", "https://i.imgur.com/PN5Fqqh.jpg");
+			photo.put("url", (coordi).get("thumbnail_src"));
+			photo.put("width", 900);
+			photo.put("height", 900);
+			messageText.put("photo", photo);
+		} else if(jContent.contains("Instagram 여자 코디")){	// messageText (+ photo)
+			// TEXT
+			messageText.put("text", "Instagram 여자코디 중 랜덤 코디입니다.");
+			
+			JSONObject coordi = coordinationSearch("여자코디");
+			
+			// LABEL BUTTON (+ URL)
+			message_button.put("label", "Instagram으로 이동");
+			message_button.put("url", "https://www.instagram.com/p/" + coordi.get("shortcode"));
+			messageText.put("message_button", message_button);
+			
+			// PHOTO
+			photo.put("url", (coordi).get("thumbnail_src"));
 			photo.put("width", 900);
 			photo.put("height", 900);
 			messageText.put("photo", photo);
@@ -156,7 +179,8 @@ public class KakaoChat {
 		btns.add("지역별 미세먼지 조회");
 		btns.add("파파고 번역 (한->영)");
 		btns.add("Go to BIFAM!");
-//		btns.add("Photo test");
+		btns.add("Instagram 여자 코디");
+		btns.add("Instagram 남자 코디");
 		
 		return btns;
 	}
@@ -352,6 +376,50 @@ public class KakaoChat {
 		}
 		return result.toString();
 	}
+	
+	public static JSONObject coordinationSearch(String gender){
+		JSONObject jObject = null;
+		
+		String target;
+		try {
+			target = "https://www.instagram.com/explore/tags/" + URLEncoder.encode(gender, "UTF-8");
+			HttpURLConnection con = (HttpURLConnection) new URL(target).openConnection();
+			
+			BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
+			String temp;
+			String jp = "";
+			while((temp = br.readLine()) != null){
+				if(temp.contains("<script type=\"text/javascript\">window._sharedData"))
+					jp = temp.split("<script type=\"text/javascript\">window._sharedData = ")[1].split(";</script>")[0];
+			}
+			JSONParser jParser = new JSONParser();
+			JSONObject firstJson = (JSONObject)jParser.parse(jp);
+			JSONArray tagPage = (JSONArray)((JSONObject)firstJson.get("entry_data")).get("TagPage");
+			JSONArray edges = (JSONArray)((JSONObject)((JSONObject)((JSONObject)(JSONObject)((JSONObject)tagPage.get(0)).get("graphql")).get("hashtag")).get("edge_hashtag_to_top_posts")).get("edges");
+			
+			// TODO ex)10분마다 파일로 서버 과부화 방지
+//			for(int i = 0; i < edges.size(); i++){
+//				JSONObject jObject = (JSONObject)(JSONObject)((JSONObject)edges.get(i)).get("node");
+//				System.out.println((jObject).get("thumbnail_src"));
+//				System.out.println("https://www.instagram.com/p/" + (jObject).get("shortcode"));
+//			}
+			// 9개 중 랜덤으로 1개 추출
+			jObject = (JSONObject)(JSONObject)((JSONObject)edges.get(new Random().nextInt(9))).get("node");
+			con.disconnect();
+			br.close();
+			
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		return jObject;
+	}
+	
+	
 	
 	/* 친구 삭제, 차단, 채팅창 나가기 기능
 	// ADD FRIEND

@@ -32,7 +32,7 @@ public class TrackingControll {
 	public String trackingPage(Model model){
 		String result = "main/404";
 		ArrayList<TrackCompany> companyList = new ArrayList<>();
-		String key = "yuvrTwW8NyuvSGQaVcmG1g";
+		String key = "9zOsiF7nFDpYy3zrZtr6Kw";
 		String urlFormat = String.format("http://info.sweettracker.co.kr/api/v1/companylist?t_key=%s", key);
 		
 		BufferedReader in = null;
@@ -99,7 +99,7 @@ public class TrackingControll {
 		BufferedReader in = null;
 		try {
 			// URL 및 연결
-			tracking.setKey("yuvrTwW8NyuvSGQaVcmG1g");		// key 대입
+			tracking.setKey("9zOsiF7nFDpYy3zrZtr6Kw");		// key 대입
 			String urlFormat = String.format("http://info.sweettracker.co.kr/api/v1/trackingInfo?t_key=%s&t_code=%s&t_invoice=%s", tracking.getKey(), tracking.getCode(), tracking.getInvoice());
 			URL url = new URL(urlFormat);
 			HttpURLConnection con = (HttpURLConnection)url.openConnection();

@@ -24,7 +24,7 @@ public class Contact {
 	}
 	
 	@RequestMapping(value = "sendMail.bf", method = RequestMethod.GET)
-	public void sendMail(String name, String email, String comment){
+	public String sendMail(String name, String email, String comment){
 		// Google 의 경우 stmp.google.com
 		String host = "smtp.naver.com";
 		
@@ -61,10 +61,12 @@ public class Contact {
 		
 		try {
 			Message mimeMessage = new MimeMessage(session);	// MimeMessage 생성
+			
 			// 발신자 setting
 			mimeMessage.setFrom(new InternetAddress("bmxpower2@naver.com"));
+			
 			// 수신자 setting (.TO는 말그대로 to(투), CC(참조), BCC(숨은참조)
-			mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(email));
+			mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress("bmxpower2@naver.com"));
 			
 			mimeMessage.setSubject(mSubject);	// 메일 제목
 			mimeMessage.setText(mcontent);	// 메일 내용
@@ -73,7 +75,7 @@ public class Contact {
 			e.printStackTrace();
 		}
 		
-		
+		return "redirect:home.bf";
 		
 	}
 }

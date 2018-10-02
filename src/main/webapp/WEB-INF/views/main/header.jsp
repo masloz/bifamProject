@@ -69,6 +69,7 @@
 					<li class="nav-item"><a href="crawling.bf" class="nav-link">Now News</a></li>
 					<li class="nav-item"><a href="trackingInquiry.bf" class="nav-link">Tracking</a></li>
 					<li class="nav-item"><a href="contact.bf" class="nav-link">Contact</a></li>
+					<li class="nav-item"><a href="excelIO.bf" class="nav-link">ExcelIO</a></li>
 				</ul>
 			</nav>
 			<!-- <br><a href="memberSignUp.bf">SIGN UP</a> -->
